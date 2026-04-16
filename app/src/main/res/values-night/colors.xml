@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Paleta Dark Moderna -->
+    <color name="primary">#7A9CFF</color>
+    <color name="primary_light">#1E2A4A</color>
+    <color name="primary_variant">#5A81F0</color>
+
+    <color name="success">#69F0AE</color>
+    <color name="success_light">#1B3D2F</color>
+
+    <color name="error">#FF8A80</color>
+    <color name="error_light">#3D1B1B</color>
+
+    <color name="background_gray">#0F1115</color>
+    <color name="surface">#1A1C22</color>
+
+    <color name="text_main">#F0F2F5</color>
+    <color name="text_secondary">#9DA5B1</color>
+    <color name="text_hint">#4D5661</color>
+
+    <color name="divider">#2C313A</color>
+</resources>

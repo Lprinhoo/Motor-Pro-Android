@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:alpha="0.9"
+        android:letterSpacing="0.15"
+        android:text="DETALHES DO VEÍCULO"
+        android:textColor="#F5F6FC"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Modelo do Veículo"
+        android:textColorHint="#B0B0B0"
+        app:boxStrokeColor="@color/input_stroke_selector"
+        app:boxStrokeWidth="2dp"
+        app:hintTextColor="#16BC4E">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDialogModel"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:inputType="textCapCharacters"
+            android:textAllCaps="true"
+            android:textColor="#F5F6FC"
+            android:textSize="20sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Ano (ex: 2024)"
+        android:textColorHint="#B0B0B0"
+        app:boxStrokeColor="@color/input_stroke_selector"
+        app:boxStrokeWidth="2dp"
+        app:hintTextColor="#16BC4E">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDialogYear"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:inputType="number"
+            android:textColor="#F5F6FC"
+            android:textSize="20sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Placa (Ex: BC3-F505)"
+        android:textColorHint="#B0B0B0"
+        app:boxStrokeColor="@color/input_stroke_selector"
+        app:boxStrokeWidth="2dp"
+        app:hintTextColor="#16BC4E">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDialogPlate"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:inputType="textCapCharacters"
+            android:textColor="#F5F6FC"
+            android:textSize="20sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDialogAdd"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginTop="32dp"
+        android:text="ADICIONAR"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:backgroundTint="#16BC4E"
+        app:cornerRadius="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDialogCancel"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CANCELAR"
+        android:textColor="#B0B0B0"
+        android:textSize="14sp" />
+
+</LinearLayout>

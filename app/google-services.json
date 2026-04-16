@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "860892024221",
+    "firebase_url": "https://teste-api-9f65e-default-rtdb.firebaseio.com",
+    "project_id": "teste-api-9f65e",
+    "storage_bucket": "teste-api-9f65e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860892024221:android:db4666beb2233311997374",
+        "android_client_info": {
+          "package_name": "com.example.testeapi01"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "860892024221-3p3it0r857prjjlun8cuec02o24j7q4q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.testeapi01",
+            "certificate_hash": "5fd38c6b371ce088628ae8637fdebd7a9fcce589"
+          }
+        },
+        {
+          "client_id": "860892024221-u1gtjb9d7vab0r5pisjhta6t983t4rdv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.testeapi01",
+            "certificate_hash": "d5840d7e3178c1f63f9d6d9805743eeb168b7f4c"
+          }
+        },
+        {
+          "client_id": "860892024221-smqnn7tgfmm09c00h2ph14330out8p6k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFiB8SaK7thy-wCBd3ZTKVIohJ-jXl2jU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "860892024221-smqnn7tgfmm09c00h2ph14330out8p6k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

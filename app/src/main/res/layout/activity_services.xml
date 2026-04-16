@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0B0B0B"
+    tools:context=".ServicesActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Agendar Serviço"
+            app:titleCentered="true"
+            app:titleTextColor="#F5F6FC"
+            app:navigationIcon="@android:drawable/ic_menu_revert"
+            app:navigationIconTint="#F5F6FC" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="O QUE SEU CARRO PRECISA?"
+                android:textColor="#F5F6FC"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:alpha="0.7" />
+
+            <!-- Container para Serviços Dinâmicos -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#1A1A1A"
+                app:cardCornerRadius="24dp">
+
+                <LinearLayout
+                    android:id="@+id/containerServicos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+                    <!-- Serviços serão inseridos aqui via código -->
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Card de Agendamento -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#1A1A1A"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="8dp"
+                app:strokeColor="#16BC4E"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:id="@+id/textViewDetailTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#16BC4E"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="SELECIONE O MECÂNICO"
+                        android:textColor="#F5F6FC"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:alpha="0.7" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupMechanics"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:singleSelection="true">
+                        <com.google.android.material.chip.Chip android:id="@+id/chipMec1" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mecânico 1" app:chipBackgroundColor="#333333" android:textColor="#F5F6FC" />
+                        <com.google.android.material.chip.Chip android:id="@+id/chipMec2" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mecânico 2" app:chipBackgroundColor="#333333" android:textColor="#F5F6FC" />
+                        <com.google.android.material.chip.Chip android:id="@+id/chipMec3" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mecânico 3" app:chipBackgroundColor="#333333" android:textColor="#F5F6FC" />
+                        <com.google.android.material.chip.Chip android:id="@+id/chipMec4" style="@style/Widget.MaterialComponents.Chip.Choice" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mecânico 4" app:chipBackgroundColor="#333333" android:textColor="#F5F6FC" />
+                    </com.google.android.material.chip.ChipGroup>
+
+                    <TextView
+                        android:id="@+id/textViewHoursTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="HORÁRIOS DISPONÍVEIS"
+                        android:textColor="#F5F6FC"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:alpha="0.7"
+                        android:visibility="gone" />
+
+                    <HorizontalScrollView
+                        android:id="@+id/horizontalScrollHours"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:scrollbars="none"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnTime08" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="08:00" android:textColor="#F5F6FC" android:layout_marginEnd="8dp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnTime09" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="09:00" android:textColor="#F5F6FC" android:layout_marginEnd="8dp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnTime10" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="10:00" android:textColor="#F5F6FC" android:layout_marginEnd="8dp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnTime11" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="11:00" android:textColor="#F5F6FC" android:layout_marginEnd="8dp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnTime14" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="14:00" android:textColor="#F5F6FC" android:layout_marginEnd="8dp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnTime15" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="15:00" android:textColor="#F5F6FC" android:layout_marginEnd="8dp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnTime16" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="16:00" android:textColor="#F5F6FC" android:layout_marginEnd="8dp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnTime17" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="17:00" android:textColor="#F5F6FC" />
+                        </LinearLayout>
+                    </HorizontalScrollView>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnBook"
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:layout_marginTop="32dp"
+                        android:backgroundTint="#16BC4E"
+                        android:text="CONFIRMAR AGENDAMENTO"
+                        android:textAllCaps="false"
+                        android:textColor="#F5F6FC"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:cornerRadius="20dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCancelBooking"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Cancelar Agendamento"
+                        android:textAllCaps="false"
+                        android:textColor="#EA4335"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="40dp"
+                android:text="Voltar ao mapa"
+                android:textAllCaps="false"
+                android:textColor="#F5F6FC"
+                android:alpha="0.5" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

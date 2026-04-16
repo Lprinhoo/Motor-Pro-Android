@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Motor Pro</string>
+    <string name="welcome">Bem-vindo ao Motor Pro</string>
+    <string name="tagline">Sua oficina digital</string>
+    <string name="no_account">Ainda não tem conta? Crie agora</string>
+    <string name="google_sign_in">Continuar com Google</string>
+    <string name="setup_profile">Configurar Perfil</string>
+    <string name="almost_there">Falta pouco para começarmos!</string>
+    <string name="full_name">Seu Nome Completo</string>
+    <string name="car_model">Modelo do Carro (ex: Civic 2020)</string>
+    <string name="car_plate">Placa do Veículo</string>
+    <string name="finish_and_enter">CONCLUIR E ENTRAR</string>
+    <string name="guest_mode">Entrar como convidado</string>
+    <string name="what_next">O que deseja hoje?</string>
+    <string name="our_services">Nossos Serviços</string>
+    <string name="find_workshop">Encontrar Oficina</string>
+    <string name="cancel_destination">Cancelar Destino</string>
+</resources>

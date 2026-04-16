@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme for Night mode. -->
+    <style name="Base.Theme.TESTEAPI01" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Main colors -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <!-- Surface and background -->
+        <item name="android:windowBackground">@color/background_gray</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_main</item>
+
+        <!-- Other colors -->
+        <item name="colorError">@color/error</item>
+        <item name="android:textColorPrimary">@color/text_main</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/background_gray</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+    </style>
+</resources>
