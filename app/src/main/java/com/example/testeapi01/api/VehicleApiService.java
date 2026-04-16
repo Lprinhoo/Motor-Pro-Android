@@ -11,42 +11,42 @@ import retrofit2.http.Path;
 
 public interface VehicleApiService {
     // Veículos
-    @POST("veiculos")
+    @POST("api/veiculos")
     Call<Veiculo> addVehicle(@Body Veiculo vehicle);
 
-    @GET("veiculos")
+    @GET("api/veiculos")
     Call<List<Veiculo>> getVehicles();
 
-    @PUT("veiculos/{placa}")
+    @PUT("api/veiculos/{placa}")
     Call<Veiculo> updateVehicle(@Path("placa") String placa, @Body Veiculo vehicle);
 
-    @DELETE("veiculos/{placa}")
+    @DELETE("api/veiculos/{placa}")
     Call<okhttp3.ResponseBody> deleteVehicle(@Path("placa") String placa);
 
     // Perfis
-    @POST("perfis")
+    @POST("api/perfis")
     Call<Void> updateProfile(@Body UserProfile profile);
 
-    @GET("perfis/{uid}")
+    @GET("api/perfis/{uid}")
     Call<UserProfile> getProfile(@Path("uid") String uid);
 
-    @GET("perfis/email/{email}")
+    @GET("api/perfis/email/{email}")
     Call<UserProfile> getProfileByEmail(@Path("email") String email);
 
-    @POST("auth/google")
+    @POST("api/auth/google")
     Call<UserProfile> loginComGoogle(@Body String idToken);
 
     // Agendamentos
-    @POST("agendamentos")
+    @POST("api/agendamentos")
     Call<Void> addAppointment(@Body Appointment appointment);
 
-    @GET("agendamentos")
+    @GET("api/agendamentos")
     Call<List<Appointment>> getAppointments();
 
-    @DELETE("agendamentos/{id}")
+    @DELETE("api/agendamentos/{id}")
     Call<okhttp3.ResponseBody> cancelAppointment(@Path("id") long id);
 
     // Oficinas
-    @GET("oficinas")
+    @GET("api/oficinas")
     Call<List<Oficina>> getOficinas();
 }

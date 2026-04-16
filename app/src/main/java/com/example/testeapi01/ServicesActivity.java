@@ -51,7 +51,7 @@ public class ServicesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_services);
 
-        oficinaId = getIntent().getLongExtra("OFICINA_ID", 1L);
+        oficinaId = getIntent().getLongExtra("OFICINA_ID", -1L);
         listaServicos = getIntent().getStringArrayListExtra("OFICINA_SERVICOS");
         listaMecanicos = getIntent().getStringArrayListExtra("OFICINA_MECANICOS");
 
@@ -274,7 +274,7 @@ public class ServicesActivity extends AppCompatActivity {
     }
 
     private void saveAppointmentToApi(String servico, String mecanico, String horario) {
-        Appointment appointment = new Appointment(userId, servico, mecanico, horario, oficinaId);
+        Appointment appointment = new Appointment(userId, servico, mecanico, horario, String.valueOf(oficinaId));
         VehicleApiService apiService = RetrofitClient.getService();
 
         apiService.addAppointment(appointment).enqueue(new Callback<Void>() {
