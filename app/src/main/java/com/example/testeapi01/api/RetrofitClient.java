@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
     private static Retrofit retrofit = null;
     // Tente 10.0.2.2 se estiver no emulador oficial ou 10.0.3.2 para Genymotion
-    private static final String BASE_URL = "https://oficina-back-end-production.up.railway.app/Teste/api/";
+    private static final String BASE_URL = "https://teste-production-a485.up.railway.app/api/";
 
     public static VehicleApiService getService() {
         if (retrofit == null) {
