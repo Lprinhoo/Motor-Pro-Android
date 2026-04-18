@@ -1,6 +1,8 @@
 package com.example.testeapi01;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -10,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
@@ -32,8 +33,11 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account == null) {
+        SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String email = prefs.getString("user_email", null);
+        String name = prefs.getString("user_name", "Usuário");
+
+        if (email == null) {
             finish();
             return;
         }
@@ -42,8 +46,8 @@ public class ProfileActivity extends AppCompatActivity {
         tvProfileEmail = findViewById(R.id.tvProfileEmail);
         progressBar = findViewById(R.id.profileProgressBar);
 
-        tvProfileEmail.setText(account.getEmail()); 
-        tvProfileName.setText(account.getDisplayName() != null ? account.getDisplayName() : "Carregando..."); 
+        tvProfileEmail.setText(email);
+        tvProfileName.setText(name);
 
         Toolbar toolbar = findViewById(R.id.toolbarProfile);
         if (toolbar != null) {
@@ -52,41 +56,45 @@ public class ProfileActivity extends AppCompatActivity {
 
         findViewById(R.id.btnLogout).setOnClickListener(v -> logout());
 
-        // Por enquanto, vamos apenas validar se o perfil existe na API
-        validarPerfilNaApi();
+        carregarPerfilCompleto(email);
     }
 
-    private void validarPerfilNaApi() {
+    private void carregarPerfilCompleto(String email) {
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account == null || account.getEmail() == null) return;
-
+        
         VehicleApiService apiService = RetrofitClient.getService();
-        apiService.getProfileByEmail(account.getEmail()).enqueue(new Callback<UserProfile>() {
+        apiService.getProfileByEmail(email).enqueue(new Callback<UserProfile>() {
             @Override
             public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     tvProfileName.setText(response.body().getName());
-                } else {
-                    Toast.makeText(ProfileActivity.this, "Perfil não encontrado na API", Toast.LENGTH_SHORT).show();
+                    // Atualiza SharedPreferences se o nome mudou na API
+                    getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit()
+                            .putString("user_name", response.body().getName())
+                            .apply();
                 }
             }
 
             @Override
             public void onFailure(Call<UserProfile> call, Throwable t) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Toast.makeText(ProfileActivity.this, "Erro de conexão com a API", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void logout() {
+        // Limpa SharedPreferences
+        getSharedPreferences("user_prefs", Context.MODE_PRIVATE).edit().clear().apply();
+
+        // Limpa Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
         GoogleSignInClient client = GoogleSignIn.getClient(this, gso);
         client.signOut().addOnCompleteListener(this, task -> {
-            startActivity(new Intent(this, LoginActivity.class));
-            finishAffinity();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
     }
 }

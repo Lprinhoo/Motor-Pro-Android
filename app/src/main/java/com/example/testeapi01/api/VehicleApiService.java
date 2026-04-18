@@ -15,6 +15,9 @@ public interface VehicleApiService {
     @POST("api/auth/google")
     Call<UserProfile> googleLogin(@Body Map<String, String> body);
 
+    @POST("api/auth/email")
+    Call<UserProfile> emailLogin(@Body Map<String, String> body);
+
     @POST("api/veiculos")
     Call<Veiculo> addVehicle(@Body Veiculo vehicle);
 

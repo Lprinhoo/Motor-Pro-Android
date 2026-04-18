@@ -7,7 +7,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.testeapi01"
+        applicationId = "com.exemplo.motorpro"
         minSdk = 28
         targetSdk = 35
         versionCode = 1

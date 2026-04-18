@@ -1,8 +1,11 @@
 package com.example.testeapi01;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -31,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
     private GoogleSignInClient mGoogleSignInClient;
     private View progressBar;
+    private EditText etEmail, etPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Client ID fornecido
-        String webClientId = "214787575143-ud0qdoqd8lqsp7qh72tk2sge29kb1ol8.apps.googleusercontent.com";
+        String webClientId = "214787575143-1n2bs6ub9aafhjk3d2q7ke69jdhl6tlq.apps.googleusercontent.com";
         
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(webClientId)
@@ -49,19 +52,51 @@ public class LoginActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         progressBar = findViewById(R.id.progressBar);
+        etEmail = findViewById(R.id.etEmail);
+        etPassword = findViewById(R.id.etPassword);
 
         findViewById(R.id.btnGoogle).setOnClickListener(v -> signInComGoogle());
-
-        // Se já está logado no Google, tenta validar com a API ou vai pro mapa
-        if (GoogleSignIn.getLastSignedInAccount(this) != null) {
-            irParaMapa();
-        }
+        findViewById(R.id.btnLogin).setOnClickListener(v -> loginComEmail());
     }
 
     private void signInComGoogle() {
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void loginComEmail() {
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+
+        Map<String, String> body = new HashMap<>();
+        body.put("email", email);
+        body.put("password", password);
+
+        RetrofitClient.getService().emailLogin(body).enqueue(new Callback<UserProfile>() {
+            @Override
+            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null) {
+                    salvarPerfilESeguir(response.body());
+                } else {
+                    Toast.makeText(LoginActivity.this, "Erro no login: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserProfile> call, Throwable t) {
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+                Toast.makeText(LoginActivity.this, "Erro de conexão", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -74,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                 enviarTokenParaApi(account.getIdToken());
             } catch (ApiException e) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Toast.makeText(this, "Erro Google Login: " + e.getStatusCode(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Erro Google: " + e.getStatusCode(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -89,12 +124,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                
-                // Independente do que venha no UserProfile, o sucesso na autenticação leva ao mapa
-                if (response.isSuccessful()) {
-                    irParaMapa();
+                if (response.isSuccessful() && response.body() != null) {
+                    salvarPerfilESeguir(response.body());
                 } else {
-                    Toast.makeText(LoginActivity.this, "API recusou o token: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Erro API: " + response.code(), Toast.LENGTH_SHORT).show();
                     mGoogleSignInClient.signOut();
                 }
             }
@@ -102,13 +135,21 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<UserProfile> call, Throwable t) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Toast.makeText(LoginActivity.this, "Servidor Offline ou Erro de Rede", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Erro de conexão", Toast.LENGTH_SHORT).show();
                 mGoogleSignInClient.signOut();
             }
         });
     }
 
-    private void irParaMapa() {
+    private void salvarPerfilESeguir(UserProfile profile) {
+        SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong("user_id", profile.getId());
+        editor.putString("user_name", profile.getName());
+        editor.putString("user_email", profile.getEmail());
+        editor.putString("user_photo", profile.getPhotoUrl());
+        editor.apply();
+
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
