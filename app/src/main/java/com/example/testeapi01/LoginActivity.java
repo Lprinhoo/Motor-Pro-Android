@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // Client ID fornecido
-        String webClientId = "860892024221-smqnn7tgfmm09c00h2ph14330out8p6k.apps.googleusercontent.com";
+        String webClientId = "214787575143-ud0qdoqd8lqsp7qh72tk2sge29kb1ol8.apps.googleusercontent.com";
         
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(webClientId)

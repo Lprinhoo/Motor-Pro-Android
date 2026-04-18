@@ -8,6 +8,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -25,7 +27,7 @@ public class SplashActivity extends AppCompatActivity {
         // Espera 2,5 segundos e decide para onde ir
         new Handler().postDelayed(() -> {
             Class<?> destination;
-            if (com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser() != null) {
+            if (GoogleSignIn.getLastSignedInAccount(this) != null) {
                 destination = MainActivity.class; // Já logado, vai para o Mapa
             } else {
                 destination = LoginActivity.class; // Não logado, vai para o Login
