@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         findViewById(R.id.btnGoogle).setOnClickListener(v -> signInComGoogle());
 
-        // Verifica se já existe uma conta conectada
+        // Se já está logado no Google, tenta validar com a API ou vai pro mapa
         if (GoogleSignIn.getLastSignedInAccount(this) != null) {
             irParaMapa();
         }
@@ -89,10 +89,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
+                
+                // Independente do que venha no UserProfile, o sucesso na autenticação leva ao mapa
+                if (response.isSuccessful()) {
                     irParaMapa();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Erro na API: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "API recusou o token: " + response.code(), Toast.LENGTH_SHORT).show();
                     mGoogleSignInClient.signOut();
                 }
             }
@@ -100,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<UserProfile> call, Throwable t) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Toast.makeText(LoginActivity.this, "Erro de conexão com o servidor", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Servidor Offline ou Erro de Rede", Toast.LENGTH_SHORT).show();
                 mGoogleSignInClient.signOut();
             }
         });
