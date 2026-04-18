@@ -1,6 +1,5 @@
 package com.example.testeapi01;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -32,9 +31,11 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 9001;
+    private static final String WEB_CLIENT_ID = "214787575143-1n2bs6ub9aafhjk3d2q7ke69jdhl6tlq.apps.googleusercontent.com";
+
     private GoogleSignInClient mGoogleSignInClient;
-    private View progressBar;
-    private EditText etEmail, etPassword;
+    private View cardAuth, cardUserProfile, progressBar;
+    private EditText etEmail, etPassword, etUserName, etModel, etPlate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,61 +43,36 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        String webClientId = "214787575143-1n2bs6ub9aafhjk3d2q7ke69jdhl6tlq.apps.googleusercontent.com";
-        
+        // Verifica se já está logado via SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        if (prefs.contains("user_email")) {
+            irParaMapa();
+            return;
+        }
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(webClientId)
+                .requestIdToken(WEB_CLIENT_ID)
                 .requestEmail()
                 .requestProfile()
                 .build();
-
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        cardAuth = findViewById(R.id.cardAuth);
+        cardUserProfile = findViewById(R.id.cardUserProfile);
         progressBar = findViewById(R.id.progressBar);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
+        etUserName = findViewById(R.id.etUserName);
+        etModel = findViewById(R.id.etModel);
+        etPlate = findViewById(R.id.etPlate);
 
         findViewById(R.id.btnGoogle).setOnClickListener(v -> signInComGoogle());
-        findViewById(R.id.btnLogin).setOnClickListener(v -> loginComEmail());
+        findViewById(R.id.btnFinishProfile).setOnClickListener(v -> salvarDadosPerfil());
     }
 
     private void signInComGoogle() {
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void loginComEmail() {
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-
-        Map<String, String> body = new HashMap<>();
-        body.put("email", email);
-        body.put("password", password);
-
-        RetrofitClient.getService().emailLogin(body).enqueue(new Callback<UserProfile>() {
-            @Override
-            public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
-                if (progressBar != null) progressBar.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
-                    salvarPerfilESeguir(response.body());
-                } else {
-                    Toast.makeText(LoginActivity.this, "Erro no login: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserProfile> call, Throwable t) {
-                if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Toast.makeText(LoginActivity.this, "Erro de conexão", Toast.LENGTH_SHORT).show();
-            }
-        });
+        startActivityForResult(mGoogleSignInClient.getSignInIntent(), RC_SIGN_IN);
     }
 
     @Override
@@ -115,8 +91,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void enviarTokenParaApi(String idToken) {
-        if (idToken == null) return;
-
         Map<String, String> body = new HashMap<>();
         body.put("idToken", idToken);
 
@@ -125,31 +99,38 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
-                    salvarPerfilESeguir(response.body());
+                    UserProfile user = response.body();
+                    salvarUsuarioLocal(user);
+                    irParaMapa();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Erro API: " + response.code(), Toast.LENGTH_SHORT).show();
-                    mGoogleSignInClient.signOut();
+                    Toast.makeText(LoginActivity.this,
+                        "Erro na API: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<UserProfile> call, Throwable t) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Toast.makeText(LoginActivity.this, "Erro de conexão", Toast.LENGTH_SHORT).show();
-                mGoogleSignInClient.signOut();
+                Toast.makeText(LoginActivity.this,
+                    "Erro de conexão: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void salvarPerfilESeguir(UserProfile profile) {
-        SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putLong("user_id", profile.getId());
-        editor.putString("user_name", profile.getName());
-        editor.putString("user_email", profile.getEmail());
-        editor.putString("user_photo", profile.getPhotoUrl());
+    private void salvarUsuarioLocal(UserProfile user) {
+        SharedPreferences.Editor editor = getSharedPreferences("user_prefs", MODE_PRIVATE).edit();
+        editor.putString("user_email", user.getEmail());
+        editor.putString("user_name", user.getName());
+        editor.putString("user_photo", user.getPhotoUrl());
+        editor.putLong("user_id", user.getId() != null ? user.getId() : 0);
         editor.apply();
+    }
 
+    private void salvarDadosPerfil() {
+        // Manter vazio por enquanto, implementar depois se necessário
+    }
+
+    private void irParaMapa() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

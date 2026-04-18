@@ -1,11 +1,8 @@
 package com.example.testeapi01;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,9 +16,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.button.MaterialButton;
 
 import com.example.testeapi01.api.Oficina;
 import com.example.testeapi01.api.RetrofitClient;
@@ -44,9 +39,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Verificação de sessão via SharedPreferences (Sem Firebase)
-        SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        if (prefs.getLong("user_id", -1) == -1) {
+        // Verificação de login via SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        if (!prefs.contains("user_email")) {
             irParaLogin();
             return;
         }
