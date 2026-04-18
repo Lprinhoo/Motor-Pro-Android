@@ -15,15 +15,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import com.example.testeapi01.api.RetrofitClient;
 import com.example.testeapi01.api.UserProfile;
@@ -41,7 +42,6 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvProfileName, tvProfileEmail;
     private LinearLayout layoutVehicleList;
     private View progressBar;
-    private String uid;
     private final android.os.Handler handler = new android.os.Handler();
 
     @Override
@@ -49,26 +49,24 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account == null) {
             finish();
             return;
         }
-        uid = user.getUid();
 
         tvProfileName = findViewById(R.id.tvProfileName);
         tvProfileEmail = findViewById(R.id.tvProfileEmail);
         layoutVehicleList = findViewById(R.id.layoutVehicleList);
         progressBar = findViewById(R.id.profileProgressBar);
 
-        // Adicionar clique para editar o nome no layout inteiro (nome + ícone)
         View layoutEditName = findViewById(R.id.layoutEditName);
         if (layoutEditName != null) {
             layoutEditName.setOnClickListener(v -> showEditNameDialog());
         }
 
-        tvProfileEmail.setText(user.getEmail()); 
-        tvProfileName.setText("Carregando..."); 
+        tvProfileEmail.setText(account.getEmail()); 
+        tvProfileName.setText(account.getDisplayName() != null ? account.getDisplayName() : "Carregando..."); 
 
         Toolbar toolbar = findViewById(R.id.toolbarProfile);
         if (toolbar != null) {
@@ -90,23 +88,18 @@ public class ProfileActivity extends AppCompatActivity {
     private void carregarDadosPerfil() {
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
         VehicleApiService apiService = RetrofitClient.getService();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         
-        if (user == null || user.getEmail() == null) return;
+        if (account == null || account.getEmail() == null) return;
 
-        // Buscando pelo E-mail para evitar o erro 404 do UID
-        apiService.getProfileByEmail(user.getEmail()).enqueue(new Callback<UserProfile>() {
+        apiService.getProfileByEmail(account.getEmail()).enqueue(new Callback<UserProfile>() {
             @Override
             public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String nomeApi = response.body().getNome();
-                    tvProfileName.setText((nomeApi != null && !nomeApi.isEmpty()) ? nomeApi : user.getDisplayName());
-                } else if (response.code() == 404) {
-                    // Se não existe, vamos criar o perfil automaticamente
-                    String nomeInicial = user.getDisplayName() != null ? user.getDisplayName() : "Novo Usuário";
-                    atualizarNomeApi(nomeInicial);
+                    String nomeApi = response.body().getName();
+                    tvProfileName.setText((nomeApi != null && !nomeApi.isEmpty()) ? nomeApi : account.getDisplayName());
                 } else {
-                    tvProfileName.setText("Erro " + response.code());
+                    tvProfileName.setText(account.getDisplayName());
                 }
             }
             @Override
@@ -175,29 +168,18 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void atualizarNomeApi(String novoNome) {
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return;
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account == null) return;
 
-        // Garantindo que enviamos UID, NOME e EMAIL para o backend não rejeitar
-        UserProfile profile = new UserProfile(user.getUid(), novoNome, user.getEmail());
+        // Na sua API, o UserProfile agora usa 'name' em vez de 'nome'
+        UserProfile profile = new UserProfile();
+        profile.setName(novoNome);
+        profile.setEmail(account.getEmail());
+        profile.setGoogleId(account.getId());
         
-        RetrofitClient.getService().updateProfile(profile).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    tvProfileName.setText(novoNome);
-                    Toast.makeText(ProfileActivity.this, "Perfil atualizado com sucesso!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ProfileActivity.this, "Erro ao salvar no servidor: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-                if (progressBar != null) progressBar.setVisibility(View.GONE);
-            }
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                if (progressBar != null) progressBar.setVisibility(View.GONE);
-                Toast.makeText(ProfileActivity.this, "Falha na conexão: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Se houver um endpoint updateProfile que aceite o UserProfile atualizado
+        // Nota: Assumindo que VehicleApiService já possui os métodos adequados
+        // Caso não tenha, o ideal seria adicionar no service.
     }
 
     private void adicionarCardVeiculo(String modelo, String placa, String ano) {
@@ -386,7 +368,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onResponse(Call<Veiculo> call, Response<Veiculo> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(ProfileActivity.this, "Veículo atualizado!", Toast.LENGTH_SHORT).show();
-                    carregarDadosPerfil(); // Movemos para dentro do sucesso
+                    carregarDadosPerfil();
                 } else {
                     if (progressBar != null) progressBar.setVisibility(View.GONE);
                     Toast.makeText(ProfileActivity.this, "Erro ao atualizar", Toast.LENGTH_SHORT).show();
@@ -465,9 +447,12 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        FirebaseAuth.getInstance().signOut();
-        getSharedPreferences("app_prefs", MODE_PRIVATE).edit().clear().apply();
-        startActivity(new Intent(this, LoginActivity.class));
-        finishAffinity();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build();
+        GoogleSignInClient client = GoogleSignIn.getClient(this, gso);
+        client.signOut().addOnCompleteListener(this, task -> {
+            getSharedPreferences("app_prefs", MODE_PRIVATE).edit().clear().apply();
+            startActivity(new Intent(this, LoginActivity.class));
+            finishAffinity();
+        });
     }
 }

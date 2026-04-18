@@ -66,6 +66,19 @@
                 android:alpha="0.7"/>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTest"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="#333333"
+                android:text="TESTAR CONEXÃO"
+                android:textAllCaps="false"
+                android:textColor="#F5F6FC"
+                app:cornerRadius="20dp"
+                app:strokeColor="#16BC4E"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnServices"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"

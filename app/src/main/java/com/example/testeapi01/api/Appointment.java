@@ -6,9 +6,9 @@ public class Appointment {
     private String servico;
     private String mecanico;
     private String horario;
-    private String oficinaId;
+    private Long oficinaId;
 
-    public Appointment(String userId, String servico, String mecanico, String horario, String oficinaId) {
+    public Appointment(String userId, String servico, String mecanico, String horario, Long oficinaId) {
         this.userId = userId;
         this.servico = servico;
         this.mecanico = mecanico;
@@ -27,6 +27,6 @@ public class Appointment {
     public void setMecanico(String mecanico) { this.mecanico = mecanico; }
     public String getHorario() { return horario; }
     public void setHorario(String horario) { this.horario = horario; }
-    public String getOficinaId() { return oficinaId; }
-    public void setOficinaId(String oficinaId) { this.oficinaId = oficinaId; }
+    public Long getOficinaId() { return oficinaId; }
+    public void setOficinaId(Long oficinaId) { this.oficinaId = oficinaId; }
 }

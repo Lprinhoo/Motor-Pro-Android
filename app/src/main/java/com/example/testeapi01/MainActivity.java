@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,13 +31,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.firebase.auth.FirebaseAuth;
 
 import com.example.testeapi01.api.Oficina;
 import com.example.testeapi01.api.RetrofitClient;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -62,7 +62,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        // Verificação de sessão puramente via Google (Sem Firebase)
+        if (GoogleSignIn.getLastSignedInAccount(this) == null) {
             irParaLogin();
             return;
         }
@@ -77,6 +78,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         btnServices = findViewById(R.id.btnServices);
         cardProfile = findViewById(R.id.cardProfile);
 
+        MaterialButton btnTest = findViewById(R.id.btnTest);
+        if (btnTest != null) {
+            btnTest.setOnClickListener(v -> {
+                startActivity(new Intent(this, TestConnectionActivity.class));
+            });
+        }
+
         if (cardProfile != null) {
             cardProfile.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
         }
@@ -89,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 intent.putExtra("OFICINA_ID", oficinaSelecionada.getId());
                 intent.putExtra("OFICINA_NOME", oficinaSelecionada.getNome());
                 
-                // Passando as listas dinâmicas para a tela de agendamento
                 if (oficinaSelecionada.getServicos() != null) {
                     intent.putStringArrayListExtra("OFICINA_SERVICOS", new java.util.ArrayList<>(oficinaSelecionada.getServicos()));
                 }
@@ -123,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void mostrarOficinasNoMapa() {
         if (mMap == null) return;
-        cancelarBusca(); // Limpa o mapa antes de adicionar novas
+        cancelarBusca();
 
         Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.ic_oficina);
         BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(b, 80, 80, false));
@@ -139,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .snippet(oficina.getEndereco())
                     .icon(icon));
             
-            marker.setTag(oficina); // Guarda o objeto oficina no marcador
+            marker.setTag(oficina);
             workshopMarkers.add(marker);
         }
 
@@ -150,8 +157,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 btnServices.setVisibility(View.VISIBLE);
                 btnAction.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.VISIBLE);
-                
-                // Traça rota até esta oficina específica
                 trazarRotaAte(marker.getPosition());
             }
             return true;

@@ -13,7 +13,8 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import com.example.testeapi01.api.Appointment;
 import com.example.testeapi01.api.RetrofitClient;
@@ -58,11 +59,12 @@ public class ServicesActivity extends AppCompatActivity {
         if (listaServicos == null) listaServicos = new ArrayList<>();
         if (listaMecanicos == null) listaMecanicos = new ArrayList<>();
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account == null) {
             finish();
             return;
         }
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userId = account.getEmail(); // Usando email como ID de referência na API
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         String nomeOficina = getIntent().getStringExtra("OFICINA_NOME");
@@ -274,7 +276,7 @@ public class ServicesActivity extends AppCompatActivity {
     }
 
     private void saveAppointmentToApi(String servico, String mecanico, String horario) {
-        Appointment appointment = new Appointment(userId, servico, mecanico, horario, String.valueOf(oficinaId));
+        Appointment appointment = new Appointment(userId, servico, mecanico, horario, oficinaId);
         VehicleApiService apiService = RetrofitClient.getService();
 
         apiService.addAppointment(appointment).enqueue(new Callback<Void>() {
