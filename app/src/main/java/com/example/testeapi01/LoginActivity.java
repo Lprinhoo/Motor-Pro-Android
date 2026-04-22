@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -34,8 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String WEB_CLIENT_ID = "214787575143-1n2bs6ub9aafhjk3d2q7ke69jdhl6tlq.apps.googleusercontent.com";
 
     private GoogleSignInClient mGoogleSignInClient;
-    private View cardAuth, cardUserProfile, progressBar;
-    private EditText etEmail, etPassword, etUserName, etModel, etPlate;
+    private View progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Verifica se já está logado via SharedPreferences
+        // Se já está logado, vai direto para o mapa
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
         if (prefs.contains("user_email")) {
             irParaMapa();
@@ -57,17 +55,9 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        cardAuth = findViewById(R.id.cardAuth);
-        cardUserProfile = findViewById(R.id.cardUserProfile);
         progressBar = findViewById(R.id.progressBar);
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        etUserName = findViewById(R.id.etUserName);
-        etModel = findViewById(R.id.etModel);
-        etPlate = findViewById(R.id.etPlate);
 
         findViewById(R.id.btnGoogle).setOnClickListener(v -> signInComGoogle());
-        findViewById(R.id.btnFinishProfile).setOnClickListener(v -> salvarDadosPerfil());
     }
 
     private void signInComGoogle() {
@@ -99,12 +89,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<UserProfile> call, Response<UserProfile> response) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
-                    UserProfile user = response.body();
-                    salvarUsuarioLocal(user);
+                    salvarUsuarioLocal(response.body());
                     irParaMapa();
                 } else {
                     Toast.makeText(LoginActivity.this,
-                        "Erro na API: " + response.code(), Toast.LENGTH_SHORT).show();
+                            "Erro na API: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -112,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<UserProfile> call, Throwable t) {
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
                 Toast.makeText(LoginActivity.this,
-                    "Erro de conexão: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        "Erro de conexão: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -124,10 +113,6 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("user_photo", user.getPhotoUrl());
         editor.putLong("user_id", user.getId() != null ? user.getId() : 0);
         editor.apply();
-    }
-
-    private void salvarDadosPerfil() {
-        // Manter vazio por enquanto, implementar depois se necessário
     }
 
     private void irParaMapa() {

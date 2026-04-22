@@ -12,36 +12,43 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface VehicleApiService {
+    
+    // Autenticação
     @POST("api/auth/google")
     Call<UserProfile> googleLogin(@Body Map<String, String> body);
 
     @POST("api/auth/email")
     Call<UserProfile> emailLogin(@Body Map<String, String> body);
 
-    @POST("api/veiculos")
-    Call<Veiculo> addVehicle(@Body Veiculo vehicle);
+    // Veículos (Usando userId dinâmico)
+    @GET("api/vehicles/{userId}")
+    Call<List<Veiculo>> getVehicles(@Path("userId") Long userId);
 
-    @GET("api/veiculos")
-    Call<List<Veiculo>> getVehicles();
+    @POST("api/vehicles/{userId}")
+    Call<Veiculo> addVehicle(@Path("userId") Long userId, @Body Veiculo vehicle);
 
-    @PUT("api/veiculos/{placa}")
-    Call<Veiculo> updateVehicle(@Path("placa") String placa, @Body Veiculo vehicle);
-
-    @DELETE("api/veiculos/{placa}")
+    @DELETE("api/vehicles/{placa}")
     Call<ResponseBody> deleteVehicle(@Path("placa") String placa);
 
+    // Oficinas
     @GET("api/oficinas")
     Call<List<Oficina>> getOficinas();
 
+    // Perfil
     @GET("api/perfis/email/{email}")
     Call<UserProfile> getProfileByEmail(@Path("email") String email);
 
     @POST("api/perfis/update")
     Call<Void> updateProfile(@Body UserProfile profile);
 
-    @GET("api/agendamentos")
-    Call<List<Appointment>> getAppointments();
+    // Agendamentos
+    @GET("api/appointments/user/{userId}")
+    Call<List<Appointment>> getAppointments(@Path("userId") Long userId);
 
-    @POST("api/agendamentos")
-    Call<Void> addAppointment(@Body Appointment appointment);
+    @POST("api/appointments/{userId}/{oficinaId}")
+    Call<Void> addAppointment(
+        @Path("userId") Long userId, 
+        @Path("oficinaId") Long oficinaId, 
+        @Body Appointment appointment
+    );
 }
